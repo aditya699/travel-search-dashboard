@@ -1,0 +1,9 @@
+{
+  "_doc": "Row-level security. Each person sees only routes that start at their origins; \"*\" means every airport. Power BI reads the exported user_access table and filters with USERPRINCIPALNAME(), and the web preview applies the same table. Use the emails people sign in to Power BI with.",
+  "users": [
+    {"email": "head.analytics@travel.example", "name": "Head of Analytics", "origins": ["*"]},
+    {"email": "delhi.desk@travel.example", "name": "Delhi desk", "origins": ["DEL"]},
+    {"email": "mumbai.desk@travel.example", "name": "Mumbai desk", "origins": ["BOM"]},
+    {"email": "south.desk@travel.example", "name": "South desk", "origins": ["BLR", "HYD", "MAA"]}
+  ]
+}

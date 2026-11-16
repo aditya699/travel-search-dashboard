@@ -1,0 +1,49 @@
+{
+  "_doc": "One entry per travel site. Adding a site is a new entry here, no code. card_selector picks one search result; id_attr is the attribute that identifies it; context_selector is the page header that says which search this is. The four demo sites are fictional and live on .example hosts, which can never resolve to a real server. Ghoomo writes in Hinglish on purpose: the regex cleaner was never taught it, so it shows what happens when a new site arrives.",
+  "sites": [
+    {
+      "key": "skybazaar",
+      "name": "SkyBazaar",
+      "base_url": "https://skybazaar.example",
+      "search_path": "/flights/search?from={origin}&to={destination}&date={depart_date}",
+      "card_selector": "div.result-card",
+      "id_attr": "data-offer-id",
+      "context_selector": "h1.search-title",
+      "min_delay_seconds": 2.0,
+      "enabled": true
+    },
+    {
+      "key": "paisaflights",
+      "name": "PaisaFlights",
+      "base_url": "https://paisaflights.example",
+      "search_path": "/search/{origin}-{destination}/{depart_date}",
+      "card_selector": "tr.fare",
+      "id_attr": "data-fare-key",
+      "context_selector": "div.crumbs",
+      "min_delay_seconds": 3.0,
+      "enabled": true
+    },
+    {
+      "key": "kitetravel",
+      "name": "Kite Travel",
+      "base_url": "https://kitetravel.example",
+      "search_path": "/f?o={origin}&d={destination}&on={depart_date}",
+      "card_selector": "li.kt-offer",
+      "id_attr": "data-ref",
+      "context_selector": "p.kt-search",
+      "min_delay_seconds": 2.0,
+      "enabled": true
+    },
+    {
+      "key": "ghoomo",
+      "name": "Ghoomo",
+      "base_url": "https://ghoomo.example",
+      "search_path": "/udaan/{origin}/{destination}?din={depart_date}",
+      "card_selector": "div.ghm-row",
+      "id_attr": "data-id",
+      "context_selector": "h2.ghm-head",
+      "min_delay_seconds": 2.0,
+      "enabled": true
+    }
+  ]
+}

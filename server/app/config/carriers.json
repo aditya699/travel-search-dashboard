@@ -1,0 +1,9 @@
+{
+  "_doc": "Canonical carriers. Sites spell them differently, so aliases map every spelling to one code. These four airlines are fictional; replace them with the real ones when you point the scraper at real sites.",
+  "carriers": [
+    {"code": "KS", "name": "Kestrel Air", "aliases": ["Kestrel", "KESTREL AIR", "Kestrel Airlines"]},
+    {"code": "MW", "name": "Monsoon Airways", "aliases": ["Monsoon", "MONSOON AIRWAYS", "Monsoon Air"]},
+    {"code": "SW", "name": "Saffron Wings", "aliases": ["Saffron", "SAFFRON WINGS"]},
+    {"code": "IJ", "name": "Indus Jet", "aliases": ["IndusJet", "Indus", "INDUS JET"]}
+  ]
+}

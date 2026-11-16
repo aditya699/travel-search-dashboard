@@ -1,0 +1,12 @@
+{
+  "_doc": "What to search on every scrape run: each route, for departures this many days after the scrape date. A rolling window like this is what lets the dashboard show how a fare moves as the trip gets closer.",
+  "routes": [
+    ["DEL", "BOM"],
+    ["BOM", "DEL"],
+    ["DEL", "BLR"],
+    ["BLR", "DEL"],
+    ["BOM", "BLR"],
+    ["DEL", "CCU"]
+  ],
+  "depart_offsets_days": [2, 5, 9, 14, 21, 30]
+}

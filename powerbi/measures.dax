@@ -1,0 +1,84 @@
+// DAX measures for the Travel Search report.
+// Create a table to hold them: Home → Enter data → name it "_Measures", load it,
+// then for each block: select _Measures → New measure → paste.
+//
+// Relationships these assume (Model view):
+//   fact_fare_quote[route_key]    *→1 dim_route[route_key]
+//   fact_fare_quote[site_key]     *→1 dim_site[site_key]
+//   fact_fare_quote[carrier_code] *→1 dim_carrier[carrier_code]
+//   fact_fare_quote[depart_date]  *→1 dim_date[date]           (active)
+//   fact_fare_quote[scrape_date]  *→1 dim_date[date]           (inactive; used below)
+//   quarantine[route_key]         *→1 dim_route[route_key]
+//   quarantine[site_key]          *→1 dim_site[site_key]
+//   dim_route[origin]             *→1 dim_airport[iata]
+// All single direction. user_access stays unrelated (the RLS rule looks it up).
+
+
+Quotes = COUNTROWS ( fact_fare_quote )
+
+Cheapest Fare = MIN ( fact_fare_quote[effective_price_inr] )
+
+Average Fare = AVERAGE ( fact_fare_quote[effective_price_inr] )
+
+Latest Scrape Date =
+CALCULATE ( MAX ( fact_fare_quote[scrape_date] ), ALL ( fact_fare_quote ) )
+
+// The cheapest fare in the most recent scrape only: what a traveller sees today.
+Cheapest Fare Today =
+VAR latest = [Latest Scrape Date]
+RETURN
+    CALCULATE ( [Cheapest Fare], fact_fare_quote[scrape_date] = latest )
+
+// Use with dim_date[date] on the axis to plot by scrape date instead of departure date.
+Cheapest Fare by Scrape Date =
+CALCULATE (
+    [Cheapest Fare],
+    USERELATIONSHIP ( fact_fare_quote[scrape_date], dim_date[date] )
+)
+
+// How much dearer than the cheapest site, for the same flight on the same scrape.
+// Put dim_site[site_name] on the axis.
+Avg Premium vs Cheapest Site % =
+VAR quotes =
+    ADDCOLUMNS (
+        fact_fare_quote,
+        "@best",
+            CALCULATE (
+                MIN ( fact_fare_quote[effective_price_inr] ),
+                ALLEXCEPT (
+                    fact_fare_quote,
+                    fact_fare_quote[scrape_date],
+                    fact_fare_quote[flight_number],
+                    fact_fare_quote[depart_date]
+                )
+            )
+    )
+RETURN
+    AVERAGEX ( quotes, DIVIDE ( fact_fare_quote[effective_price_inr] - [@best], [@best] ) ) * 100
+
+// Booking window: average of the daily cheapest fare by days to departure.
+// Put fact_fare_quote[days_to_departure] on the x-axis (sort descending).
+Avg Daily Cheapest =
+AVERAGEX (
+    SUMMARIZE (
+        fact_fare_quote,
+        fact_fare_quote[route_key],
+        fact_fare_quote[depart_date],
+        fact_fare_quote[scrape_date]
+    ),
+    CALCULATE ( MIN ( fact_fare_quote[effective_price_inr] ) )
+)
+
+Quarantined Listings =
+CALCULATE ( COUNTROWS ( quarantine ), quarantine[status] = "rejected" )
+
+Ad Listings =
+CALCULATE ( COUNTROWS ( quarantine ), quarantine[status] = "not_fare" )
+
+Usable Listing % =
+VAR ok = [Quotes]
+VAR total = ok + COUNTROWS ( quarantine )
+RETURN DIVIDE ( ok, total )
+
+// Put this on a card while testing RLS: it shows who Power BI thinks you are.
+Signed In As = USERPRINCIPALNAME ()

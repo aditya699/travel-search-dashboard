@@ -1,0 +1,26 @@
+// Row-level security: one dynamic role, "Desk".
+//
+// Modeling → Manage roles → New → name it Desk, then add a DAX filter on each table:
+//
+// ---- table: dim_route -------------------------------------------------------------
+// A person sees a route when its origin is one of their airports in user_access.
+// Filtering dim_route filters fact_fare_quote and quarantine through the relationships.
+
+dim_route[origin]
+    IN CALCULATETABLE (
+        VALUES ( user_access[origin] ),
+        user_access[email] = USERPRINCIPALNAME ()
+    )
+
+// ---- table: user_access -------------------------------------------------------------
+// People see only their own access rows, so nobody can read who else sees what.
+
+user_access[email] = USERPRINCIPALNAME ()
+
+// Why this is safe by default: an email that is not in user_access matches no rows,
+// so a typo or a new joiner sees an empty report, not everything. "*" (all airports)
+// is expanded into one row per airport when the warehouse is built, so the rule never
+// needs a special case.
+//
+// Emails are compared as Power BI returns them from USERPRINCIPALNAME(). The export
+// stores them lower-case; if your tenant returns mixed case, wrap both sides in LOWER().
